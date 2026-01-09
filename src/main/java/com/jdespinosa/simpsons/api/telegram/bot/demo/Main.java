@@ -1,14 +1,14 @@
 package com.jdespinosa.simpsons.api.telegram.bot.demo;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JavaSimpsonsTelegramBotDemoApplication {
+@Slf4j
+public class Main {
 
     public static void main(String[] args) {
-        SpringApplication.run(JavaSimpsonsTelegramBotDemoApplication.class, args);
-
-        System.out.println("Hello World!");
+        SpringApplication.run(Main.class, args);
     }
 }
