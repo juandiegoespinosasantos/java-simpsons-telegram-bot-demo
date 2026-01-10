@@ -6,3 +6,9 @@ telegram:
   bot:
     username: {TELEGRAM_BOT_USERNAME}
     token: {TELEGRAM_BOT_TOKEN}
+
+simpsons:
+  api:
+    base-url: https://thesimpsonsapi.com/api
+  cdn:
+    base-url: https://cdn.thesimpsonsapi.com
