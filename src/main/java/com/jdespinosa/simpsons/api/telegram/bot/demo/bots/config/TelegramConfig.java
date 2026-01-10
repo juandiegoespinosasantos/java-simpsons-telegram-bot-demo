@@ -1,4 +1,4 @@
-package com.jdespinosa.simpsons.api.telegram.bot.demo.config;
+package com.jdespinosa.simpsons.api.telegram.bot.demo.bots.config;
 
 import com.jdespinosa.simpsons.api.telegram.bot.demo.bots.MyFirstBot;
 import org.springframework.context.annotation.Bean;
