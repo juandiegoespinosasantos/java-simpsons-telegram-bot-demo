@@ -13,7 +13,8 @@ import lombok.Getter;
 public enum Commands {
 
     START("/start"),
-    RANDOM_EPISODE("/random_episode");
+    RANDOM_EPISODE("/random_episode"),
+    RANDOM_CHARACTER("/random_character");
 
     private final String command;
 
