@@ -14,7 +14,8 @@ public enum Commands {
 
     START("/start"),
     RANDOM_EPISODE("/random_episode"),
-    RANDOM_CHARACTER("/random_character");
+    RANDOM_CHARACTER("/random_character"),
+    RANDOM_LOCATION("/random_location");
 
     private final String command;
 

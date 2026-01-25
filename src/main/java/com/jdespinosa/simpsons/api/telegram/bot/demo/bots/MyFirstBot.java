@@ -3,8 +3,10 @@ package com.jdespinosa.simpsons.api.telegram.bot.demo.bots;
 import com.jdespinosa.simpsons.api.telegram.bot.demo.bots.enums.Commands;
 import com.jdespinosa.simpsons.api.telegram.bot.demo.external.services.ICharactersService;
 import com.jdespinosa.simpsons.api.telegram.bot.demo.external.services.IEpisodesService;
+import com.jdespinosa.simpsons.api.telegram.bot.demo.external.services.ILocationsService;
 import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiCharacterDTO;
 import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiEpisodeDTO;
+import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiLocationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +42,14 @@ public class MyFirstBot extends TelegramLongPollingBot {
     private static final String DEFAULT_REPLY = "You sent %s";
     private static final int MAX_EPISODES = 768;
     private static final int MAX_CHARACTERS = 1182;
+    private static final int MAX_LOCATIONS = 477;
     private static final int MAX_DESCRIPTION_SIZE = 250;
     private static final int IMG_SIZE_EPISODE = 500;
     private static final int IMG_SIZE_CHARACTER = 200;
 
     private final IEpisodesService episodesService;
     private final ICharactersService charactersService;
+    private final ILocationsService locationsService;
 
     @Value("${telegram.bot.username}")
     private String telegramBotUsername;
@@ -57,9 +61,12 @@ public class MyFirstBot extends TelegramLongPollingBot {
     private String simpsonsCdnBaseUrl;
 
     @Autowired
-    public MyFirstBot(IEpisodesService episodesService, ICharactersService charactersService) {
+    public MyFirstBot(IEpisodesService episodesService,
+                      ICharactersService charactersService,
+                      ILocationsService locationsService) {
         this.episodesService = episodesService;
         this.charactersService = charactersService;
+        this.locationsService = locationsService;
     }
 
     @Override
@@ -95,7 +102,7 @@ public class MyFirstBot extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (TelegramApiException ex) {
-            log.error("Something went horribly wrong!", ex);
+            log.error("D'oh! Something went wrong.", ex);
             throw new RuntimeException(ex);
         }
     }
@@ -111,7 +118,7 @@ public class MyFirstBot extends TelegramLongPollingBot {
         try {
             execute(sendPhoto);
         } catch (TelegramApiException ex) {
-            log.error("Something went horribly wrong!", ex);
+            log.error("D'oh! Something went wrong.", ex);
             throw new RuntimeException(ex);
         }
     }
@@ -129,6 +136,7 @@ public class MyFirstBot extends TelegramLongPollingBot {
                 case START -> processStart(user);
                 case RANDOM_EPISODE -> processRandomEpisode(user);
                 case RANDOM_CHARACTER -> processRandomCharacter(user);
+                case RANDOM_LOCATION -> processRandomLocation(user);
             }
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
@@ -157,7 +165,8 @@ public class MyFirstBot extends TelegramLongPollingBot {
         try {
             sendPhoto(user, imageUrl, caption);
         } catch (Exception ex) {
-            sendMessage(user, "Something went wrong!");
+            log.error(ex.getMessage(), ex);
+            sendMessage(user, "D'oh! Something went wrong.");
         }
     }
 
@@ -171,11 +180,27 @@ public class MyFirstBot extends TelegramLongPollingBot {
         try {
             sendPhoto(user, imageUrl, caption);
         } catch (Exception ex) {
-            sendMessage(user, "Something went wrong!");
+            log.error(ex.getMessage(), ex);
+            sendMessage(user, "D'oh! Something went wrong.");
         }
     }
 
-    private String buildCharacterCaption(SimpsonsApiCharacterDTO character) {
+    private void processRandomLocation(final User user) {
+        long randomId = getRandomNumber(MAX_LOCATIONS);
+
+        SimpsonsApiLocationDTO location = locationsService.findById(randomId);
+        String imageUrl = simpsonsCdnBaseUrl + '/' + IMG_SIZE_CHARACTER + location.getImagePath();
+        String caption = buildLocationCaption(location);
+
+        try {
+            sendPhoto(user, imageUrl, caption);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            sendMessage(user, "D'oh! Something went wrong.");
+        }
+    }
+
+    private String buildCharacterCaption(final SimpsonsApiCharacterDTO character) {
         StringBuilder sb = new StringBuilder()
                 .append("#")
                 .append(character.getId())
@@ -213,6 +238,24 @@ public class MyFirstBot extends TelegramLongPollingBot {
         int idx = getRandomNumber(phrases.size()) - 1;
 
         return phrases.get(idx);
+    }
+
+    private String buildLocationCaption(final SimpsonsApiLocationDTO location) {
+        StringBuilder sb = new StringBuilder()
+                .append("#")
+                .append(location.getId())
+                .append("/")
+                .append(MAX_LOCATIONS)
+                .append(" - ")
+                .append(location.getName());
+
+        String town = location.getTown();
+        if (StringUtils.isNotEmpty(town)) sb.append("\n\n").append(town);
+
+        String use = location.getUse();
+        if (StringUtils.isNotEmpty(use)) sb.append("\n").append(use);
+
+        return sb.toString();
     }
 
     private int getRandomNumber(final int limit) {
