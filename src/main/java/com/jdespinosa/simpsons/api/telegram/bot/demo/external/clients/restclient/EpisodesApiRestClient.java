@@ -1,10 +1,12 @@
 package com.jdespinosa.simpsons.api.telegram.bot.demo.external.clients.restclient;
 
 import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiEpisodeDTO;
-import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiEpisodesPageDTO;
-import lombok.AllArgsConstructor;
+import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiPageDTO;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author juandiegoespinosasantos@outlook.com
@@ -12,24 +14,27 @@ import org.springframework.web.client.RestClient;
  * @since 17
  */
 @Repository
-@AllArgsConstructor
-public class EpisodesApiRestClient implements IEpisodesApiRestClient {
+public class EpisodesApiRestClient extends ApiRestClient implements IEpisodesApiRestClient {
 
-    private final RestClient simpsonsApiRestClient;
+    protected EpisodesApiRestClient(RestClient simpsonsApiRestClient) {
+        super(simpsonsApiRestClient);
+    }
 
     @Override
-    public SimpsonsApiEpisodesPageDTO findAll(final int page) {
-        return simpsonsApiRestClient.get()
-                .uri("/episodes?page={page}", page)
-                .retrieve()
-                .body(SimpsonsApiEpisodesPageDTO.class);
+    protected String getPath() {
+        return "/episodes";
+    }
+
+    @Override
+    public SimpsonsApiPageDTO<SimpsonsApiEpisodeDTO> findAll(final int page) {
+        Map<String, Object> queryParams = new HashMap<>();
+        queryParams.put("page", page);
+
+        return getRequest(queryParams, SimpsonsApiPageDTO.class);
     }
 
     @Override
     public SimpsonsApiEpisodeDTO findById(final Long id) {
-        return simpsonsApiRestClient.get()
-                .uri("/episodes/{id}", id)
-                .retrieve()
-                .body(SimpsonsApiEpisodeDTO.class);
+        return getRequest(id, SimpsonsApiEpisodeDTO.class);
     }
 }

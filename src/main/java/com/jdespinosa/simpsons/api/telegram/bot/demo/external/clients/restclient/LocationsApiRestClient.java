@@ -2,9 +2,11 @@ package com.jdespinosa.simpsons.api.telegram.bot.demo.external.clients.restclien
 
 import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiLocationDTO;
 import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiPageDTO;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author juandiegoespinosasantos@outlook.com
@@ -12,24 +14,27 @@ import org.springframework.web.client.RestClient;
  * @since 17
  */
 @Repository
-@AllArgsConstructor
-public class LocationsApiRestClient implements ILocationsApiRestClient {
+public class LocationsApiRestClient extends ApiRestClient implements ILocationsApiRestClient {
 
-    private final RestClient simpsonsApiRestClient;
+    protected LocationsApiRestClient(RestClient simpsonsApiRestClient) {
+        super(simpsonsApiRestClient);
+    }
+
+    @Override
+    protected String getPath() {
+        return "/locations";
+    }
 
     @Override
     public SimpsonsApiPageDTO<SimpsonsApiLocationDTO> findAll(final int page) {
-        return simpsonsApiRestClient.get()
-                .uri("/locations?page={page}", page)
-                .retrieve()
-                .body(SimpsonsApiPageDTO.class);
+        Map<String, Object> queryParams = new HashMap<>();
+        queryParams.put("page", page);
+
+        return getRequest(queryParams, SimpsonsApiPageDTO.class);
     }
 
     @Override
     public SimpsonsApiLocationDTO findById(final Long id) {
-        return simpsonsApiRestClient.get()
-                .uri("/locations/{id}", id)
-                .retrieve()
-                .body(SimpsonsApiLocationDTO.class);
+        return getRequest(id, SimpsonsApiLocationDTO.class);
     }
 }

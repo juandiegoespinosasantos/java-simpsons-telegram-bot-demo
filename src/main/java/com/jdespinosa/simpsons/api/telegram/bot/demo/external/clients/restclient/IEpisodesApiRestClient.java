@@ -1,7 +1,7 @@
 package com.jdespinosa.simpsons.api.telegram.bot.demo.external.clients.restclient;
 
 import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiEpisodeDTO;
-import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiEpisodesPageDTO;
+import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiPageDTO;
 
 /**
  * @author juandiegoespinosasantos@outlook.com
@@ -10,7 +10,7 @@ import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiEpiso
  */
 public interface IEpisodesApiRestClient {
 
-    SimpsonsApiEpisodesPageDTO findAll(int page);
+    SimpsonsApiPageDTO<SimpsonsApiEpisodeDTO> findAll(int page);
 
     SimpsonsApiEpisodeDTO findById(Long id);
 }

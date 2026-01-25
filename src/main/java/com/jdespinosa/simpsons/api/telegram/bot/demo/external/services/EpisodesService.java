@@ -2,7 +2,7 @@ package com.jdespinosa.simpsons.api.telegram.bot.demo.external.services;
 
 import com.jdespinosa.simpsons.api.telegram.bot.demo.external.clients.restclient.IEpisodesApiRestClient;
 import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiEpisodeDTO;
-import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiEpisodesPageDTO;
+import com.jdespinosa.simpsons.api.telegram.bot.demo.model.dtos.SimpsonsApiPageDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class EpisodesService implements IEpisodesService {
     private final IEpisodesApiRestClient apiClient;
 
     @Override
-    public SimpsonsApiEpisodesPageDTO findAll(final int page) {
+    public SimpsonsApiPageDTO<SimpsonsApiEpisodeDTO> findAll(final int page) {
         return apiClient.findAll(page);
     }
 
